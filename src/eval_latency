@@ -1,0 +1,23 @@
+import numpy as np
+from preprocess import detect_and_preprocess
+from inference import predict_lbp, predict_hog, predict_cnn
+
+def evaluate(image_paths, labels):
+    results = {'lbp':[], 'hog':[], 'cnn':[]}
+    correct = {'lbp':0, 'hog':0, 'cnn':0}
+    n=0
+    for p,lab in zip(image_paths, labels):
+        frame = cv2.imread(p)
+        face48, face_classical = detect_and_preprocess(frame)
+        if face48 is None:
+            continue
+        n+=1
+        lbl, conf, ms = predict_lbp(face_classical)
+        results['lbp'].append(ms); correct['lbp'] += (lbl == lab)
+        lbl, conf, ms = predict_hog(face_classical)
+        results['hog'].append(ms); correct['hog'] += (lbl == lab)
+        lbl, conf, ms = predict_cnn(face48)
+        results['cnn'].append(ms); correct['cnn'] += (lbl == lab)
+    mean_latencies = {k: np.mean(v) for k,v in results.items()}
+    accuracies = {k: correct[k]/n for k in correct}
+    return mean_latencies, accuracies, n

@@ -1,0 +1,12 @@
+tensorflow
+scikit-learn
+scikit-image
+opencv-python
+opencv-contrib-python
+gradio
+numpy
+pandas
+matplotlib
+h5py
+joblib
+tqdm
